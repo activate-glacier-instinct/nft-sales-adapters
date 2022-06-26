@@ -73,6 +73,21 @@ class CRYPTOPUNKS2 {
         }
         return buyer;
     };
+    
+      _getPrice = async (event, block) => {
+        if (!this.symbol.decimals) {
+            return { price: null, priceUsd: null };
+        }
+
+        const po = await this.getPrice(block.timestamp);
+        const nativePrice = new BigNumber(event.returnValues.price).dividedBy(10 ** this.symbol.decimals);
+
+        return {
+            price: nativePrice.toNumber(),
+            priceUsd: nativePrice.multipliedBy(po.price).toNumber(),
+        };
+    };
+    
 
     process = async event => {
         const block = await this.sdk.getBlock(event.blockNumber);
